@@ -7,6 +7,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import net.deechael.kookdesktop.page.Login
 import net.deechael.kookdesktop.util.Case
+import net.deechael.kookdesktop.util.Controller
 import net.deechael.kookdesktop.util.Switcher
 
 @Composable
@@ -15,7 +16,11 @@ fun App() {
     MaterialTheme(
         colorScheme = darkColorScheme()
     ) {
-        Switcher("login") {
+        val controller = Controller()
+        Switcher(
+            currentPage = "login",
+            controller = controller
+        ) {
             Case("login") {
                 Login()
             }
