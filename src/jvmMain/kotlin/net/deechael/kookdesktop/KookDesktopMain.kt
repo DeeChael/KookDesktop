@@ -22,7 +22,9 @@ fun App() {
             controller = controller
         ) {
             Case("login") {
-                Login()
+                Login {
+                    controller.goto("home")
+                }
             }
 
             Case("home") {

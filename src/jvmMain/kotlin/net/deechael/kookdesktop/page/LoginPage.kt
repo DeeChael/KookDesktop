@@ -30,7 +30,7 @@ import net.deechael.kookdesktop.util.Switcher
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Login() {
+fun Login(success: () -> Unit) {
     var current by rememberSaveable {
         mutableStateOf("0")
     }
@@ -98,10 +98,10 @@ fun Login() {
             )
             Switcher(current, loginerController) {
                 Case("0") {
-                    LoginUser()
+                    LoginUser(success)
                 }
                 Case("1") {
-                    LoginBot()
+                    LoginBot(success)
                 }
             }
         }
@@ -110,7 +110,7 @@ fun Login() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginUser() {
+fun LoginUser(success: () -> Unit) {
     var phoneNumber by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -180,7 +180,7 @@ fun LoginUser() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginBot() {
+fun LoginBot(success: () -> Unit) {
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var buttonEnabled by rememberSaveable { mutableStateOf(true) }
