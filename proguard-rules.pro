@@ -1,0 +1,5 @@
+-dontoptimize
+-dontobfuscate
+
+-dontnote **
+-dontwarn **
