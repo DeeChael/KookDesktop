@@ -19,7 +19,8 @@ class Switcher(val controller: Controller) {
         else (if (this.cases.containsKey(current))
             this.cases[current]!!.content
         else
-            @Composable {}) as @Composable () -> Unit
+            @Composable {
+            }) as @Composable () -> Unit
 
         function()
     }
@@ -28,8 +29,7 @@ class Switcher(val controller: Controller) {
 
 }
 
-class Case(val name: String, val content: @Composable () -> Unit) {
-}
+class Case(val name: String, val content: @Composable () -> Unit)
 
 class Controller {
 

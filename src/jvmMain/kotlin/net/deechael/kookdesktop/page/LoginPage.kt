@@ -24,9 +24,23 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.window.Popup
+import com.google.gson.JsonParser
+import kotlinx.coroutines.launch
+import net.deechael.kook.exception.LoginFailedException
+import net.deechael.kook.util.KookLoginer
+import net.deechael.kookdesktop.KOOK_CLIENT
+import net.deechael.kookdesktop.KOOK_SCOPE
+import net.deechael.kookdesktop.LOGGER
 import net.deechael.kookdesktop.util.Case
 import net.deechael.kookdesktop.util.Controller
+import net.deechael.kookdesktop.util.Dialog
 import net.deechael.kookdesktop.util.Switcher
+import okhttp3.Request
+import snw.jkook.JKook
+import snw.kookbc.impl.CoreImpl
+import snw.kookbc.impl.KBCClient
+import snw.kookbc.impl.network.HttpAPIRoute
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,10 +56,10 @@ fun Login(success: () -> Unit) {
                 NavigationBarItem(
                     selected = current == "0",
                     icon = {
-                           Icon(
-                               imageVector = Icons.Filled.Face,
-                               contentDescription = "user"
-                           )
+                        Icon(
+                            imageVector = Icons.Filled.Face,
+                            contentDescription = "user"
+                        )
                     },
                     label = {
                         Text(
@@ -118,6 +132,22 @@ fun LoginUser(success: () -> Unit) {
 
     var tryLogging by rememberSaveable { mutableStateOf(false) }
 
+    var showDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    if (showDialog) {
+        Dialog(onCloseRequest = {
+            showDialog = false
+        }) {
+            Text(
+                text = "Failed to login",
+                modifier = Modifier.padding(12.dp),
+                fontSize = 1.em
+            )
+        }
+    }
+
     TextField(
         value = phoneNumber,
         onValueChange = { phoneNumber = it },
@@ -160,10 +190,30 @@ fun LoginUser(success: () -> Unit) {
     Button(onClick = {
         buttonEnabled = false
         tryLogging = true
-        // Invoke below if login failed
-//
-//            tryLogging = false
-//            buttonEnabled = true
+        try {
+            val token = KookLoginer.login(phoneNumber, password)
+            KOOK_CLIENT = KBCClient(JKook.getCore() as CoreImpl, File("plugins"), token)
+        } catch (e: LoginFailedException) {
+            showDialog = true
+            KOOK_CLIENT = null
+            tryLogging = false
+            buttonEnabled = true
+        }
+        if (KOOK_CLIENT != null) {
+            Runtime.getRuntime().addShutdownHook(Thread(KOOK_CLIENT!!::shutdown))
+            KOOK_SCOPE.launch {
+                try {
+                    KOOK_CLIENT!!.start()
+                } catch (e: Exception) {
+                    LOGGER.error("Failed to start client", e)
+                    KOOK_CLIENT!!.shutdown()
+                    return@launch
+                }
+                KOOK_CLIENT!!.loop()
+                KOOK_CLIENT!!.shutdown()
+            }
+            success()
+        }
     },
         enabled = buttonEnabled,
         shape = RoundedCornerShape(5.dp),
@@ -181,15 +231,31 @@ fun LoginUser(success: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginBot(success: () -> Unit) {
-    var password by rememberSaveable { mutableStateOf("") }
-    var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    var token by rememberSaveable { mutableStateOf("") }
+    var tokenVisible by rememberSaveable { mutableStateOf(false) }
     var buttonEnabled by rememberSaveable { mutableStateOf(true) }
 
     var tryLogging by rememberSaveable { mutableStateOf(false) }
 
+    var showDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    if (showDialog) {
+        Dialog(onCloseRequest = {
+            showDialog = false
+        }) {
+            Text(
+                text = "Failed to login",
+                modifier = Modifier.padding(12.dp),
+                fontSize = 1.em
+            )
+        }
+    }
+
     TextField(
-        value = password,
-        onValueChange = { password = it },
+        value = token,
+        onValueChange = { token = it },
         label = {
             Text("Token")
         },
@@ -198,16 +264,16 @@ fun LoginBot(success: () -> Unit) {
         placeholder = {
             Text("Token")
         },
-        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        visualTransformation = if (tokenVisible) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         trailingIcon = {
-            val image = if (passwordVisible)
+            val image = if (tokenVisible)
                 Icons.Filled.Visibility
             else Icons.Filled.VisibilityOff
 
-            val description = if (passwordVisible) "Hide Token" else "Show Token"
+            val description = if (tokenVisible) "Hide Token" else "Show Token"
 
-            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+            IconButton(onClick = { tokenVisible = !tokenVisible }) {
                 Icon(imageVector = image, description)
             }
         }
@@ -216,10 +282,62 @@ fun LoginBot(success: () -> Unit) {
     Button(onClick = {
         buttonEnabled = false
         tryLogging = true
-        // Invoke below if login failed
-//
-//            tryLogging = false
-//            buttonEnabled = true
+
+        KOOK_CLIENT = KBCClient(JKook.getCore() as CoreImpl, File("plugins"), "Bot $token")
+
+        JKook.getCore()
+
+        LOGGER.debug("Trying to login as bot")
+
+        LOGGER.debug("Checking if the bot token is valid")
+        val response = KOOK_CLIENT!!.networkClient.client.newCall(
+            Request.Builder()
+                .url(HttpAPIRoute.USER_ME.toFullURL())
+                .get()
+                .build()
+        ).execute()
+
+        if (!response.isSuccessful) {
+            LOGGER.debug("Login failed because the token is not correct")
+            showDialog = true
+            KOOK_CLIENT = null
+            tryLogging = false
+            buttonEnabled = true
+            response.close()
+            return@Button
+        }
+
+        val body = JsonParser.parseString(response.body!!.string()).asJsonObject
+
+        response.close()
+
+        if (body["code"].asInt != 0) {
+            LOGGER.debug("Login failed because the token is not correct")
+            showDialog = true
+            KOOK_CLIENT = null
+            tryLogging = false
+            buttonEnabled = true
+            return@Button
+        }
+
+        val userInfo = body["data"].asJsonObject
+
+        LOGGER.info("Login successfully")
+        LOGGER.info("Login as ${userInfo["username"].asString}#${userInfo["identify_num"].asString}")
+
+        Runtime.getRuntime().addShutdownHook(Thread(KOOK_CLIENT!!::shutdown))
+        KOOK_SCOPE.launch {
+            try {
+                KOOK_CLIENT!!.start()
+            } catch (e: Exception) {
+                LOGGER.error("Failed to start client", e)
+                KOOK_CLIENT!!.shutdown()
+                return@launch
+            }
+            KOOK_CLIENT!!.loop()
+            KOOK_CLIENT!!.shutdown()
+        }
+        success()
     },
         enabled = buttonEnabled,
         shape = RoundedCornerShape(5.dp),
