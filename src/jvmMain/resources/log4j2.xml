@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="WARN">
     <properties>
-        <property name="LOG_LEVEL">${sys:log4j2.log.level:-debug}</property>
+        <property name="LOG_LEVEL">${sys:log4j2.log.level:-info}</property>
     </properties>
     <appenders>
         <TerminalConsole name="Console">
