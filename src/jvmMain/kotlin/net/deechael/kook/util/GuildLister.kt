@@ -40,9 +40,17 @@ object GuildLister {
                 val obj = element.asJsonObject
                 if (obj["id"].asString != "" && !obj["color"].isJsonNull) {
                     val group = GuildGroup(obj["id"].asString, obj["name"].asString, obj["color"].asInt)
-                    LOGGER.debug("Found the info of guild group with id [{}] and name [{}]", obj["id"].asString, obj["name"].asString)
+                    LOGGER.debug(
+                        "Found the info of guild group with id [{}] and name [{}]",
+                        obj["id"].asString,
+                        obj["name"].asString
+                    )
                     for (guild in obj["guild_ids"].asJsonArray) {
-                        LOGGER.debug("Found the info of guild with id [{}] and name [{}]", guild.asString, datas[guild.asString]!!.name)
+                        LOGGER.debug(
+                            "Found the info of guild with id [{}] and name [{}]",
+                            guild.asString,
+                            datas[guild.asString]!!.name
+                        )
                         group.guilds.add(Guild(guild.asString, datas[guild.asString]!!))
                     }
                     guilds.add(group)

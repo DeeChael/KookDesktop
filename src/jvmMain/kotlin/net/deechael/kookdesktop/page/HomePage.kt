@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import io.kamel.image.KamelImage
 import io.kamel.image.lazyPainterResource
 import net.deechael.kook.util.Guild
@@ -22,6 +23,7 @@ import net.deechael.kook.util.GuildLister
 import net.deechael.kookdesktop.KOOK_CLIENT
 import net.deechael.kookdesktop.LOGGER
 import net.deechael.kookdesktop.util.HorizontalDivider
+import net.deechael.kookdesktop.util.Updater
 
 @Preview
 @Composable
@@ -40,6 +42,20 @@ fun HomePreview() {
 fun Home() {
     LOGGER.debug("Rendering Home page, now listing all the guilds")
     val guilds = GuildLister.listGroups(KOOK_CLIENT!!)
+
+    val guildPageUpdater = Updater()
+
+    guildPageUpdater.update {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Text(
+                "Click the guild left to view the channels",
+                fontSize = 4.em,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    }
 
     Row(
         modifier = Modifier.fillMaxSize()
@@ -90,7 +106,9 @@ fun Home() {
                                     .height(48.dp)
                                     .width(48.dp)
                                     .clickable(true, guild.info.name) {
-                                        TODO("Switch guild")
+                                        guildPageUpdater.update {
+                                            GuildPage(guild)
+                                        }
                                     }
                             ) {
                                 if (guild.info.icon != "") {
@@ -181,7 +199,9 @@ fun Home() {
                                             .height(48.dp)
                                             .width(48.dp)
                                             .clickable(true, subGuild.info.name) {
-                                                TODO("Switch guild")
+                                                guildPageUpdater.update {
+                                                    GuildPage(subGuild)
+                                                }
                                             }
                                     ) {
                                         if (subGuild.info.icon != "") {
@@ -207,10 +227,10 @@ fun Home() {
         HorizontalDivider(
             thickness = 2.dp
         )
-        Column(
+        Box(
             modifier = Modifier.fillMaxSize()
         ) {
-
+            guildPageUpdater.show()
         }
     }
 }

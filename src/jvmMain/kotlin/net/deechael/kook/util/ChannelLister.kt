@@ -4,53 +4,24 @@ import net.deechael.kookdesktop.LOGGER
 import snw.kookbc.impl.KBCClient
 import snw.kookbc.impl.network.HttpAPIRoute
 
-interface ChannelItem {
-
-    fun getId(): String
-
-    fun getName(): String
-
-    fun getLevel(): Int
+abstract class ChannelItem(val id: String, val name: String, val level: Int) {
 
 }
 
-class Channel(val id: String, val name: String, val parent: String, val level: Int, val voice: Boolean) : ChannelItem {
-
-    override fun getId(): String {
-        return this.id
-    }
-
-    override fun getName(): String {
-        return this.name
-    }
-
-    override fun getLevel(): Int {
-        return this.level
-    }
+class Channel(id: String, name: String, val parent: String, level: Int, val voice: Boolean) :
+    ChannelItem(id, name, level) {
 
 }
 
-class Category(val id: String, val name: String, val level: Int) : ChannelItem {
+class Category(id: String, name: String, level: Int) : ChannelItem(id, name, level) {
 
     val channels: MutableList<Channel> = mutableListOf()
-
-    override fun getId(): String {
-        return this.id
-    }
-
-    override fun getName(): String {
-        return this.name
-    }
-
-    override fun getLevel(): Int {
-        return this.level
-    }
 
 }
 
 object ChannelLister {
 
-    fun listGroups(client: KBCClient, guild: String): List<ChannelItem> {
+    fun listChannels(client: KBCClient, guild: String): List<ChannelItem> {
         LOGGER.debug("Listing channels of guild with id [{}]", guild)
 
         val channels = mutableListOf<ChannelItem>()
@@ -78,7 +49,13 @@ object ChannelLister {
                     rawDatas.add(category)
                     categories[category.id] = category
                 } else {
-                    val channel = Channel(obj["id"].asString, obj["name"].asString, obj["parent_id"].asString, obj["level"].asInt, obj["type"].asInt == 2)
+                    val channel = Channel(
+                        obj["id"].asString,
+                        obj["name"].asString,
+                        obj["parent_id"].asString,
+                        obj["level"].asInt,
+                        obj["type"].asInt == 2
+                    )
                     LOGGER.debug("Found channel with id [{}] and name [{}]", channel.id, channel.name)
                     rawDatas.add(channel)
                 }
@@ -92,20 +69,29 @@ object ChannelLister {
                 channels.add(channel)
             } else if (channel is Channel) {
                 if (channel.parent.isNotEmpty()) {
-                    channels.add(channel)
-                } else {
                     categories[channel.parent]!!.channels.add(channel)
+                } else {
+                    channels.add(channel)
                 }
             }
         }
 
         channels.sortBy {
             if (it is Category) {
-                it.channels.sortBy { sub ->
+                it.channels.sortByDescending { sub ->
                     sub.level
                 }
+                it.channels.sortWith { a, b ->
+                    if (a.voice && b.voice) {
+                        0
+                    } else if (a.voice) {
+                        1
+                    } else {
+                        -1
+                    }
+                }
             }
-            it.getLevel()
+            it.level
         }
 
         return channels.toList()
