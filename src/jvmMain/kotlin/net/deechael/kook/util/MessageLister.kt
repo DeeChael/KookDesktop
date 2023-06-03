@@ -2,12 +2,8 @@ package net.deechael.kook.util
 
 import com.google.gson.JsonObject
 import net.deechael.kookdesktop.LOGGER
-import snw.jkook.entity.User
-import snw.jkook.message.Message
-import snw.jkook.message.TextChannelMessage
 import snw.jkook.message.component.BaseComponent
 import snw.kookbc.impl.KBCClient
-import snw.kookbc.impl.message.TextChannelMessageImpl
 import snw.kookbc.impl.network.HttpAPIRoute
 import snw.kookbc.util.GsonUtil
 

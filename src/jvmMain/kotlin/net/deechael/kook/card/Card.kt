@@ -10,7 +10,12 @@ class MultipleCardBuilder {
 
     val cards: MutableList<CardComponent> = mutableListOf()
 
-    fun CardComponent(theme: Theme? = null, size: Size = Size.LG, color: String? = null, content: CardBuilder.() -> Unit = {}) {
+    fun CardComponent(
+        theme: Theme? = null,
+        size: Size = Size.LG,
+        color: String? = null,
+        content: CardBuilder.() -> Unit = {},
+    ) {
         val builder = CardBuilder()
         builder.theme = theme
         builder.size = size
@@ -44,7 +49,12 @@ fun MultipleCardComponent(content: MultipleCardBuilder.() -> Unit): MultipleCard
     return builder.build()
 }
 
-fun CardComponent(theme: Theme? = null, size: Size = Size.LG, color: String? = null, content: CardBuilder.() -> Unit = {}): CardComponent {
+fun CardComponent(
+    theme: Theme? = null,
+    size: Size = Size.LG,
+    color: String? = null,
+    content: CardBuilder.() -> Unit = {},
+): CardComponent {
     val builder = CardBuilder()
     builder.theme = theme
     builder.size = size

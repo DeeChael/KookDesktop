@@ -28,7 +28,6 @@ import net.deechael.kook.util.Guild
 import net.deechael.kookdesktop.KOOK_CLIENT
 import net.deechael.kookdesktop.LOGGER
 import net.deechael.kookdesktop.util.HorizontalDivider
-import net.deechael.kookdesktop.util.Updater
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

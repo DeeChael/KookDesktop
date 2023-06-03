@@ -3,7 +3,6 @@ package net.deechael.kookdesktop
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -11,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import net.deechael.kookdesktop.page.Home
 import net.deechael.kookdesktop.page.Login
+import net.deechael.kookdesktop.style.MATERIAL3_COLOR
 import net.deechael.kookdesktop.util.Case
 import net.deechael.kookdesktop.util.Controller
 import net.deechael.kookdesktop.util.Switcher
@@ -58,7 +58,7 @@ val KOOK_SCOPE = CoroutineScope(Job())
 @Preview
 fun App() {
     MaterialTheme(
-        colorScheme = darkColorScheme()
+        colorScheme = MATERIAL3_COLOR
     ) {
         Surface {
 

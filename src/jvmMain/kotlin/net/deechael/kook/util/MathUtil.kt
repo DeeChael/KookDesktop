@@ -29,7 +29,7 @@ object MathUtil {
         if (tryConvert != null) {
             return tryConvert
         }
-        return when(char) {
+        return when (char) {
             'a' -> 10
             'b' -> 11
             'c' -> 12

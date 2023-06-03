@@ -13,7 +13,12 @@ class ActionGroupBuilder {
 
     private val buttons: MutableList<InteractElement> = mutableListOf()
 
-    fun Button(theme: Theme? = null, value: String? = null, type: ButtonElement.EventType? = null, content: ButtonBuilder.() -> Unit = {}) {
+    fun Button(
+        theme: Theme? = null,
+        value: String? = null,
+        type: ButtonElement.EventType? = null,
+        content: ButtonBuilder.() -> Unit = {},
+    ) {
         val builder = ButtonBuilder()
         builder.theme = theme
         builder.value = value
@@ -173,7 +178,12 @@ class SectionBuilder {
         this.text = builder.build()
     }
 
-    fun Button(theme: Theme? = null, value: String? = null, type: ButtonElement.EventType? = null, content: ButtonBuilder.() -> Unit = {}) {
+    fun Button(
+        theme: Theme? = null,
+        value: String? = null,
+        type: ButtonElement.EventType? = null,
+        content: ButtonBuilder.() -> Unit = {},
+    ) {
         val builder = ButtonBuilder()
         builder.theme = theme
         builder.value = value

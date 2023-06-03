@@ -157,7 +157,7 @@ fun LoginUser(success: () -> Unit) {
         shape = RoundedCornerShape(5.dp),
         singleLine = true,
         placeholder = {
-            Text("Password")
+            Text("Phone Number")
         },
     )
     Spacer(modifier = Modifier.height(10.dp))

@@ -1,12 +1,10 @@
 package net.deechael.kookdesktop.page
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,7 +18,8 @@ import net.deechael.kook.util.ChannelMessage
 import net.deechael.kook.util.Guild
 import net.deechael.kook.util.MessageLister
 import net.deechael.kookdesktop.KOOK_CLIENT
-import snw.jkook.message.Message
+import net.deechael.kookdesktop.style.MATERIAL3_COLOR
+import net.deechael.kookdesktop.style.MATERIAL3_TYPOGRAPHY
 
 @Composable
 fun RowScope.ChannelPage(guild: Guild, channel: Channel) {
@@ -46,15 +45,15 @@ fun Message(message: ChannelMessage) {
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .border(1.5.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                .border(1.5.dp, MATERIAL3_COLOR.secondary, CircleShape)
         )
         Spacer(modifier = Modifier.width(8.dp))
 
         Column {
             Text(
                 text = message.author.name,
-                color = MaterialTheme.colorScheme.onSecondary,
-                style = MaterialTheme.typography.headlineMedium
+                color = MATERIAL3_COLOR.onPrimary,
+                style = MATERIAL3_TYPOGRAPHY.headlineSmall
             )
 
             Spacer(modifier = Modifier.height(4.dp))

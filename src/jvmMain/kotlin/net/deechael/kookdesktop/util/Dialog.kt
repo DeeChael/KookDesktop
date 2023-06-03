@@ -26,7 +26,7 @@ fun Dialog(
     focusable: Boolean = true,
     onPreviewKeyEvent: ((KeyEvent) -> Boolean) = { false },
     onKeyEvent: ((KeyEvent) -> Boolean) = { false },
-    content: @Composable DialogWindowScope.() -> Unit
+    content: @Composable DialogWindowScope.() -> Unit,
 ) {
     androidx.compose.ui.window.Dialog(
         onCloseRequest,

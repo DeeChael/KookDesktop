@@ -22,7 +22,7 @@ fun Indicator(
     size: Dp = 32.dp,
     sweepAngle: Float = 90f,
     color: Color = MaterialTheme.colorScheme.primary,
-    strokeWidth: Dp = ProgressIndicatorDefaults.CircularStrokeWidth
+    strokeWidth: Dp = ProgressIndicatorDefaults.CircularStrokeWidth,
 ) {
     val transition = rememberInfiniteTransition()
 
