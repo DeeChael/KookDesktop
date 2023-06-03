@@ -42,6 +42,7 @@ kotlin {
 
                 implementation("io.ktor:ktor-client-okhttp:2.0.3")
                 implementation("com.alialbaali.kamel:kamel-image:0.4.0")
+                implementation("com.mikepenz:multiplatform-markdown-renderer:0.6.1")
 
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.material3)

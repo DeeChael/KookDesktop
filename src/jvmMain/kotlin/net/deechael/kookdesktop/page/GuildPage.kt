@@ -16,9 +16,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import net.deechael.kook.util.Category
 import net.deechael.kook.util.Channel
 import net.deechael.kook.util.ChannelLister
@@ -26,12 +28,20 @@ import net.deechael.kook.util.Guild
 import net.deechael.kookdesktop.KOOK_CLIENT
 import net.deechael.kookdesktop.LOGGER
 import net.deechael.kookdesktop.util.HorizontalDivider
+import net.deechael.kookdesktop.util.Updater
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GuildPage(guild: Guild) {
     LOGGER.debug("Rendering guild page with guild id [{}], now listing all the channels", guild.id)
     val channels = ChannelLister.listChannels(KOOK_CLIENT!!, guild.id)
+
+    val temp: Channel? = null
+
+    var viewingChannel by rememberSaveable {
+        mutableStateOf(temp)
+    }
+
     Row(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -54,6 +64,9 @@ fun GuildPage(guild: Guild) {
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth()
+                                .clickable {
+                                    viewingChannel = channel
+                                }
                         ) {
                             if (channel.voice) {
                                 Icon(
@@ -127,6 +140,9 @@ fun GuildPage(guild: Guild) {
                             ) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth()
+                                        .clickable {
+                                            viewingChannel = subChannel
+                                        }
                                 ) {
                                     if (subChannel.voice) {
                                         Icon(
@@ -154,5 +170,18 @@ fun GuildPage(guild: Guild) {
             }
         }
         HorizontalDivider()
+        if (viewingChannel != null) {
+            ChannelPage(guild, viewingChannel!!)
+        } else {
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    "Click the channel left to view the messages",
+                    fontSize = 4.em,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
     }
 }
